@@ -156,6 +156,11 @@ canvas {
     border: 1px solid #fff;
 }
 
-#toggleTrajectory {
-    width: 100px;
+#toggleTrajectory, #pauseResumeButton {
+    width: 150px;
+}
+
+.game-button-group {
+    display: flex;
+    flex-direction: column;
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,12 +14,17 @@
     <link rel="icon" href="static/img/favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="static/img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="static/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="static/js/game.js"></script>
     <title>Portal da Física</title>
 </head>
+
 <body class="game-page">
     <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <button class="game-button" id="toggleTrajectory">Mostrar Trajetória</button>
-    <button class="game-button" id="pauseResumeButton">Pausar</button>
+    <div class="game-button-group">
+        <button class="game-button" id="toggleTrajectory">Mostrar Trajetória</button>
+        <button class="game-button" id="pauseResumeButton">Pausar</button>
+    </div>
 </body>
+
 </html>
