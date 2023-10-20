@@ -1,0 +1,161 @@
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+.bg-astronauta {
+    background: url(../img/background-image.jpeg);
+    background-size: 100vmax;
+    background-position-x: center;
+    background-position-y: center;
+    background-attachment: fixed;
+}
+
+header {
+    background-color: rgb(51, 51, 51);
+    color: white;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    grid-template-rows: 1fr;
+    margin: 0;
+    padding: 0;
+}
+
+.logo-titulo {
+    display: flex;
+    justify-self: center;
+    align-self: center;
+}
+
+.logo {
+    width: 70px;
+    height: 70px;
+    margin-top: 0;
+}
+
+.logo-titulo h1 {
+    font-size: 2em;
+    margin: 0;
+    align-self: center;
+}
+
+.bi-chevron-left {
+    font-size: 1.7em;
+}
+
+.bi-list {
+    font-size: 2.5em;
+    transition: all 0.5s ease;
+    color: white;
+}
+
+.bi-list:hover {
+    font-size: 2.7em;
+}
+
+.button {
+    color: white;
+    text-decoration: none;
+    border: none;
+    background: none;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 250px;
+    height: 100%;
+    background-color: rgb(51, 51, 51);
+    color: white;
+    transition: left 0.5s ease;
+}
+
+.sidebar-content {
+    margin: 10px 0 0 30px;
+    font-size: 1.5em;
+    transition: color 0.2s ease;
+}
+
+.sidebar-content:hover {
+    color: rgb(192, 192, 192);
+}
+
+.fecharSidebar {
+    background: none;
+    color: white;
+    border: none;
+    margin-top: 10px;
+    margin-left: 20px;
+    padding: 4px;
+}
+
+.mostrarSidebar {
+    padding: 0;
+    border: none;
+    background: none;
+    color: black;
+    justify-self: start;
+    margin-left: 30px;
+    margin-block: 5px;
+}
+
+.link {
+    text-decoration: none;
+    color: white;
+}
+
+main {
+    height: calc(90vh - 29px);
+    display: flex;
+    margin-top: 90px;
+    margin-inline: 90px;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-index-group {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+}
+
+.button-index {
+    color: black;
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: rgb(169, 206, 255);
+    padding-inline: 20px;
+    padding-block: 5px;
+    border-radius: 20px;
+    box-shadow: 0px 10px 0px black;
+}
+
+.game-page {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #000;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    border: 1px solid #fff;
+}
+
+#toggleTrajectory {
+    width: 100px;
+}
