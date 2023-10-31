@@ -1,192 +1,207 @@
 // Game
-document.addEventListener('DOMContentLoaded', function () {
-    const canvas = document.getElementById('gameCanvas');
+$(document).ready(function () {
+    const G = 0.1; // Constante da gravitação
+    const canvas = $('#gameCanvas')[0];
     const ctx = canvas.getContext('2d');
+    const togglePath = $('#togglePath');
+    const pauseSimulation = $('#pauseSimulation');
+    const explanation = $('#explanation');
 
-    // Game objects
+    const planet1 = {
+        x: canvas.width / 2 - 250,
+        y: canvas.height / 2,
+        radius: 20,
+        mass: 5000,
+        velocity: { x: 0, y: 1 },
+        color: 'blue',
+        trajectory: [],
+        isPathVisible: false,
+        isSimulationPaused: false,
+    };
+
+    const planet2 = {
+        x: canvas.width / 2 + 300,
+        y: canvas.height / 2,
+        radius: 10,
+        mass: 500,
+        velocity: { x: 0, y: -1 },
+        color: 'white',
+        trajectory: [],
+        isPathVisible: false,
+        isSimulationPaused: false,
+    };
+
     const star = {
         x: canvas.width / 2,
         y: canvas.height / 2,
+        radius: 60,
         mass: 10000,
-        radius: 50,
+        velocity: { x: 0, y: 0 },
+        color: '#f1c40f',
+        isPathVisible: false,
+        isSimulationPaused: false,
     };
 
-    const planet = {
-        x: canvas.width / 2 + 250,
-        y: canvas.height / 2,
-        mass: 50,
-        radius: 10,
-        velocity: {
-            x: 0,
-            y: -4,
-        },
+    const toggleVisibility = (object) => {
+        object.isPathVisible = !object.isPathVisible;
+        const button = object.isPathVisible ? 'Esconder' : 'Mostrar';
+        togglePath.text(`${button} trajetória`);
+        togglePath.css('background-color', object.isPathVisible ? 'rgb(255, 156, 156)' : '#3498db');
     };
 
-    const G = -0.4; // Gravitational constant
-
-    // Variável para rastrear se a trajetória está visível ou não
-    let showTrajectory = false;
-
-    // Botão para mostrar/ocultar a trajetória
-    const toggleTrajectoryButton = document.getElementById('toggleTrajectory');
-    toggleTrajectoryButton.addEventListener('click', function () {
-        showTrajectory = !showTrajectory;
-        if (showTrajectory) {
-            toggleTrajectoryButton.textContent = 'Ocultar Trajetória';
-        } else {
-            toggleTrajectoryButton.textContent = 'Mostrar Trajetória';
-        }
+    togglePath.click(() => {
+        toggleVisibility(planet1);
+        toggleVisibility(planet2);
+        toggleVisibility(star);
     });
 
-    // Variáveis para rastrear a posição da seta de velocidade
-    let arrowX = planet.x + planet.velocity.x * 10;
-    let arrowY = planet.y + planet.velocity.y * 10;
+    const toggleSimulation = (object) => {
+        object.isSimulationPaused = !object.isSimulationPaused;
+        const button = object.isSimulationPaused ? 'Resumir' : 'Pausar';
+        pauseSimulation.text(button);
+        pauseSimulation.css('background-color', object.isSimulationPaused ? 'rgb(255, 156, 156)' : '#3498db');
+    };
 
-    // Variável para rastrear se o botão do mouse está pressionado
-    let mousePressed = false;
-
-    // Variável para rastrear se o jogo está pausado
-    let gamePaused = false;
-
-    // Botão para pausar/retomar o jogo
-    const pauseResumeButton = document.getElementById('pauseResumeButton');
-    pauseResumeButton.addEventListener('click', function () {
-        gamePaused = !gamePaused;
-        if (gamePaused) {
-            pauseResumeButton.textContent = 'Retomar';
-        } else {
-            pauseResumeButton.textContent = 'Pausar';
-        }
+    pauseSimulation.click(() => {
+        toggleSimulation(planet1);
+        toggleSimulation(planet2);
+        toggleSimulation(star);
     });
 
-    // Adiciona um ouvinte de evento ao canvas para rastrear o botão do mouse pressionado
-    canvas.addEventListener('mousedown', function () {
-        mousePressed = true;
-    });
+    const updateExplanation = () => {
+        explanation.text('Explicação: A simulação está em andamento...');
+    };
 
-    // Adiciona um ouvinte de evento ao canvas para rastrear o botão do mouse solto
-    canvas.addEventListener('mouseup', function () {
-        if (mousePressed) {
-            // Atualiza a velocidade do planeta com base na direção indicada pela seta de velocidade
-            const dx = arrowX - planet.x;
-            const dy = arrowY - planet.y;
-            const length = Math.sqrt(dx * dx + dy * dy);
-
-            // Define a nova velocidade do planeta com base na direção da seta de velocidade
-            planet.velocity.x = (dx / length) * length / 10;
-            planet.velocity.y = (dy / length) * length / 10;
-
-            mousePressed = false;
-        }
-    });
-
-    // Adiciona um ouvinte de evento ao canvas para rastrear a posição do mouse
-    canvas.addEventListener('mousemove', function (event) {
-        if (mousePressed) {
-            // Atualiza a posição da seta de velocidade enquanto o botão do mouse está pressionado
-            arrowX = event.clientX - canvas.getBoundingClientRect().left;
-            arrowY = event.clientY - canvas.getBoundingClientRect().top;
-        }
-    });
-
-
-    // Function to calculate the gravitational force
-    function calculateGravity(object1, object2) {
-        const dx = object2.x - object1.x;
-        const dy = object2.y - object1.y;
+    const calculateForce = (planet, other) => {
+        const dx = other.x - planet.x;
+        const dy = other.y - planet.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const force = (G * object1.mass * object2.mass) / (distance * distance);
-        const angle = Math.atan2(dy, dx);
-        const fx = force * Math.cos(angle);
-        const fy = force * Math.sin(angle);
-        return { fx, fy };
-    }
+        if (distance > planet.radius + other.radius) {
+            const force = (G * other.mass * planet.mass) / (distance * distance);
+            const angle = Math.atan2(dy, dx);
+            return { force, angle };
+        }
+        return { force: 0, angle: 0 };
+    };
 
-    // Array para armazenar as posições passadas do planeta
-    const planetPath = [];
-
-    // Função para desenhar a trajetória do planeta
-    function drawTrajectory() {
-        ctx.beginPath();
-        ctx.moveTo(planetPath[0].x, planetPath[0].y);
-
-        for (let i = 1; i < planetPath.length; i++) {
-            ctx.lineTo(planetPath[i].x, planetPath[i].y);
+    const updatePosition = () => {
+        // planeta1 com estrela
+        if (!planet1.isSimulationPaused) {
+            const { force, angle } = calculateForce(planet1, star);
+            const acceleration = force / planet1.mass;
+            planet1.velocity.x += acceleration * Math.cos(angle);
+            planet1.velocity.y += acceleration * Math.sin(angle);
+            planet1.x += planet1.velocity.x;
+            planet1.y += planet1.velocity.y;
+            planet1.trajectory.push({ x: planet1.x, y: planet1.y });
+        }
+        
+        // planeta2 com estrela
+        if (!planet2.isSimulationPaused) {
+            const { force, angle } = calculateForce(planet2, star);
+            const acceleration = force / planet2.mass;
+            planet2.velocity.x += acceleration * Math.cos(angle);
+            planet2.velocity.y += acceleration * Math.sin(angle);
+            planet2.x += planet2.velocity.x;
+            planet2.y += planet2.velocity.y;
+            planet2.trajectory.push({ x: planet2.x, y: planet2.y });
         }
 
-        ctx.strokeStyle = 'rgba(200, 200, 200, 0.3)';
-        ctx.stroke();
-    }
+        // planeta1 com planeta2
+        if (!planet1.isSimulationPaused) {
+            const { force, angle } = calculateForce(planet1, planet2);
+            const acceleration = force / planet1.mass;
+            planet1.velocity.x += acceleration * Math.cos(angle);
+            planet1.velocity.y += acceleration * Math.sin(angle);
+            planet1.x += planet1.velocity.x;
+            planet1.y += planet1.velocity.y;
+            planet1.trajectory.push({ x: planet1.x, y: planet1.y });
+        }
 
-    // Função para desenhar uma seta
-    function drawArrow(x1, y1, x2, y2, color) {
-        ctx.strokeStyle = color;
-        ctx.fillStyle = color;
+        // planeta2 com planeta1
+        if (!planet2.isSimulationPaused) {
+            const { force, angle } = calculateForce(planet2, planet1);
+            const acceleration = force / planet2.mass;
+            planet2.velocity.x += acceleration * Math.cos(angle);
+            planet2.velocity.y += acceleration * Math.sin(angle);
+            planet2.x += planet2.velocity.x;
+            planet2.y += planet2.velocity.y;
+            planet2.trajectory.push({ x: planet2.x, y: planet2.y });
+        }
+    
+        drawCanvas();
+        if (planet1.isPathVisible) drawPath(planet1);
+        if (planet2.isPathVisible) drawPath(planet2);
+        requestAnimationFrame(updatePosition);
+    };
+
+    const drawPath = (planet) => {
         ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-
-        const angle = Math.atan2(y1 - y2, x1 - x2);
-        const arrowSize = 20;
-
-        // Desenha a seta como um triângulo
-        ctx.lineTo(x2 + arrowSize * Math.cos(angle - Math.PI / 6), y2 + arrowSize * Math.sin(angle - Math.PI / 6));
-        ctx.moveTo(x2, y2);
-        ctx.lineTo(x2 + arrowSize * Math.cos(angle + Math.PI / 6), y2 + arrowSize * Math.sin(angle + Math.PI / 6));
-
+        ctx.strokeStyle = planet.color;
+    
+        // Limite o tamanho da trajetória
+        if (planet.trajectory.length > 600) {
+            planet.trajectory.splice(0, planet.trajectory.length - 600);
+        }
+    
+        ctx.moveTo(planet.trajectory[0].x, planet.trajectory[0].y);
+        planet.trajectory.forEach((point) => {
+            ctx.lineTo(point.x, point.y);
+        });
         ctx.stroke();
-    }
+        ctx.closePath();
+    };
 
-    // Animation loop
-    function animate() {
+    const drawArrow = (planet) => {
+        if (planet.velocity.x !== 0 || planet.velocity.y !== 0) {
+            const arrowLength = 50;
+            const arrowAngle = Math.atan2(planet.velocity.y, planet.velocity.x);
+    
+            ctx.beginPath();
+            ctx.strokeStyle = 'green';
+            ctx.moveTo(planet.x, planet.y);
+            ctx.lineTo(planet.x + arrowLength * Math.cos(arrowAngle), planet.y + arrowLength * Math.sin(arrowAngle));
+            ctx.lineWidth = 2;
+            ctx.stroke();
+    
+            // Desenha a ponta da flecha
+            ctx.beginPath();
+            ctx.moveTo(planet.x + arrowLength * Math.cos(arrowAngle), planet.y + arrowLength * Math.sin(arrowAngle));
+            ctx.lineTo(planet.x + (arrowLength - 5) * Math.cos(arrowAngle - 0.3), planet.y + (arrowLength - 5) * Math.sin(arrowAngle - 0.3));
+            ctx.lineTo(planet.x + (arrowLength - 5) * Math.cos(arrowAngle + 0.3), planet.y + (arrowLength - 5) * Math.sin(arrowAngle + 0.3));
+            ctx.closePath();
+            ctx.fillStyle = 'green';
+            ctx.fill();
+        }
+    };
 
+    const drawCanvas = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const gravity = calculateGravity(star, planet);
-
-        if (!gamePaused) {
-            // Atualiza a velocidade e a posição do planeta com base na gravidade
-            planet.velocity.x += gravity.fx / planet.mass;
-            planet.velocity.y += gravity.fy / planet.mass;
-            planet.x += planet.velocity.x;
-            planet.y += planet.velocity.y;
-        }
-
-        // Atualiza a matriz de posições do planeta
-        planetPath.push({ x: planet.x, y: planet.y });
-
-        // Mantém o tamanho da matriz planetPath limitado para evitar vazamento de memória
-        if (planetPath.length > 300) {
-            planetPath.shift();
-        }
-
-        // Desenha a estrela no centro do canvas
+    
+        // Desenha a estrela
         ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
-        ctx.fillStyle = 'yellow';
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = star.color;
         ctx.fill();
         ctx.closePath();
-
-        // Desenha o planeta
+    
+        // Desenha o planeta 1
         ctx.beginPath();
-        ctx.arc(planet.x, planet.y, planet.radius, 0, 2 * Math.PI);
-        ctx.fillStyle = 'blue';
+        ctx.arc(planet1.x, planet1.y, planet1.radius, 0, Math.PI * 2);
+        ctx.fillStyle = planet1.color;
         ctx.fill();
         ctx.closePath();
+        drawArrow(planet1);
+    
+        // Desenha o planeta 2
+        ctx.beginPath();
+        ctx.arc(planet2.x, planet2.y, planet2.radius, 0, Math.PI * 2);
+        ctx.fillStyle = planet2.color;
+        ctx.fill();
+        ctx.closePath();
+        drawArrow(planet2);
+    };
 
-        if (showTrajectory) {
-            drawTrajectory();
-        }
-
-        // Vetor de aceleração
-
-        // Vetor de velocidade
-        drawArrow(planet.x, planet.y, arrowX, arrowY, 'green');
-
-
-        requestAnimationFrame(animate);
-    }
-
-    // Inicia a animação
-    animate();
+    updateExplanation();
+    updatePosition();
 });

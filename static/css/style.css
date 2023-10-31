@@ -144,23 +144,37 @@ main {
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
     align-items: center;
     height: 100vh;
     background-color: #000;
-    overflow: hidden;
+    position: relative;
 }
 
 canvas {
-    display: block;
-    border: 1px solid #fff;
+    border: 1px solid white;
 }
 
-#toggleTrajectory, #pauseResumeButton {
-    width: 150px;
-}
-
-.game-button-group {
+.game-buttons {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 300px;
+}
+
+.button-game {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+#pauseSimulation {
+    margin-top: 10px;
+}
+
+#explanation {
+    color: white;
+    margin-top: 10px;
 }
