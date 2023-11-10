@@ -12,7 +12,7 @@ $(document).ready(function () {
         y: canvas.height / 2,
         radius: 20,
         mass: 5000,
-        velocity: { x: 0, y: 1 },
+        velocity: { x: 0, y: 1.5 },
         color: 'blue',
         trajectory: [],
         isPathVisible: false,
@@ -24,7 +24,7 @@ $(document).ready(function () {
         y: canvas.height / 2,
         radius: 10,
         mass: 500,
-        velocity: { x: 0, y: -1 },
+        velocity: { x: 0, y: -1.5 },
         color: 'white',
         trajectory: [],
         isPathVisible: false,
@@ -116,17 +116,6 @@ $(document).ready(function () {
             planet1.x += planet1.velocity.x;
             planet1.y += planet1.velocity.y;
             planet1.trajectory.push({ x: planet1.x, y: planet1.y });
-        }
-
-        // planeta2 com planeta1
-        if (!planet2.isSimulationPaused) {
-            const { force, angle } = calculateForce(planet2, planet1);
-            const acceleration = force / planet2.mass;
-            planet2.velocity.x += acceleration * Math.cos(angle);
-            planet2.velocity.y += acceleration * Math.sin(angle);
-            planet2.x += planet2.velocity.x;
-            planet2.y += planet2.velocity.y;
-            planet2.trajectory.push({ x: planet2.x, y: planet2.y });
         }
     
         drawCanvas();

@@ -178,3 +178,18 @@ canvas {
     color: white;
     margin-top: 10px;
 }
+
+.texto-colab {
+    background-color: white;
+    border-radius: 20px;
+    font-size: 20px;
+    padding-inline: 50px;
+    padding-block: 50px;
+    height: auto;
+    text-align: justify;
+    flex-direction: column;
+}
+
+.texto-colab h2 {
+    margin-bottom: 30px;
+}
