@@ -168,6 +168,7 @@ canvas {
     border: none;
     padding: 10px 20px;
     cursor: pointer;
+    border-radius: 10px;
 }
 
 #pauseSimulation {
@@ -192,4 +193,9 @@ canvas {
 
 .texto-colab h2 {
     margin-bottom: 30px;
+}
+
+.link-game {
+    text-decoration: none;
+    margin-bottom: 10px;
 }
